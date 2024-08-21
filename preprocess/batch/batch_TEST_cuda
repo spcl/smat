@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#SBATCH --job-name=TEST_cuda
+#SBATCH --ntasks=1
+#SBATCH --partition=short
+#SBATCH --gres=gpu:1
+
+#SBATCH --output=outputs_exps/TEST_cuda.out
+#SBATCH --error=outputs_exps/TEST_cuda.err
+
+./programs/cuda/TEST_cuda -b 3 -v 2 -a 2 -B 3

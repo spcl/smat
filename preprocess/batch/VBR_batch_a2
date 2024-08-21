@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#SBATCH --ntasks=1
+#SBATCH --partition=short
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+
+#SBATCH --job-name=VBR_batch_a2
+#SBATCH --output=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.out
+#SBATCH --error=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.err
+
+if [[ $# < 3 ]]
+then
+    echo "usage: sbatch exp_TEST matrix row_block_size col_block_size"
+else
+
+matrix=$1
+row_block_size=$2
+col_block_size=$3
+
+if [[ $# > 3 ]]
+then
+    cval=$4
+else
+    cval=8192
+fi
+echo "cval = $cval"
+
+echo "$matrix" | sed 's|.*/||' | cut -d'.' -f1 > name.tmp
+matnum=$(<name.tmp)
+echo $matnum
+
+
+./programs/cuda/cuda_multiply -a 2 -x 10 -M 7 -P 1 -F 1 -b $row_block_size -B $col_block_size -f $matrix -S 4 -c $cval -o outputs_exps/VBR_batch_a2_$matnum-$row_block_size-x-$col_block_size-$cval.out 2> outputs_exps/VBR_batch_a2_$matnum-$row_block_size-x-$col_block_size-$cval.err
+
+fi

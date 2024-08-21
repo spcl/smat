@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#SBATCH --ntasks=1
+#SBATCH --partition=short
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+
+#SBATCH --job-name=BELLPACK_a2
+#SBATCH --output=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.out
+#SBATCH --error=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.err
+
+if [[ $# < 2 ]]
+then
+    echo "usage: sbatch BELLPACK matrix block_size"
+else
+
+matrix=$1
+block_size=$2
+
+echo "$matrix" | sed 's|.*/||' | cut -d'.' -f1 > name.tmp
+matnum=$(<name.tmp)
+echo $matnum
+
+if [[ $# > 2 ]]
+then
+    cval=$3
+else
+    cval=8192
+fi
+echo "cval = $cval"
+
+if [[ $# > 3 ]]
+then
+    Sval=$4
+else
+    Sval=1024
+fi
+echo "Sval = $Sval"
+
+./programs/cuda/cuda_multiply -a 2 -x 10 -M 3 -P 1 -F 1 -c $cval -b $block_size -B $block_size -f $matrix -o outputs_exps/BELLPACK_a2_$matnum-$block_size-$cval.out 2> outputs_exps/BELLPACK_a2_$matnum-$block_size-$cval.err
+
+fi

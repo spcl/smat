@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#SBATCH --ntasks=1
+#SBATCH --partition=short
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+
+#SBATCH --job-name=CUTLAS_GEMM
+#SBATCH --output=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.out
+#SBATCH --error=outputs_exps/slurm_runtime/slurm_runtime_%x.%j.err
+
+if [[ $# < 1 ]]
+then
+    echo "usage: sbatch CUTLAS_GEMM matrix [input_format] [B_cols]"
+else
+
+matrix=$1
+
+echo "$matrix" | sed 's|.*/||' | cut -d'.' -f1 > name.tmp
+matnum=$(<name.tmp)
+echo $matnum
+
+if [[ $# > 1 ]]
+then
+    inputfmt=$2
+else
+    inputfmt=1
+fi
+echo "input = $inputfmt"
+
+if [[ $# > 2 ]]
+then
+    cval=$3
+else
+    cval=8192
+fi
+echo "cval = $cval"
+
+./programs/cuda/cuda_multiply -M 9 -x 10 -F 1 -P 1 -R $inputfmt -c $cval -f $matrix -o outputs_exps/CUTLAS_GEMM_$matnum-$cval.out 2> outputs_exps/CUTLAS_GEMM_$matnum-$cval.err
+
+fi
