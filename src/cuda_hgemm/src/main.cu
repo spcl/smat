@@ -91,11 +91,11 @@ int main(int argc, char *argv[]) {
     Tester tester(FLAGS_M, FLAGS_N, FLAGS_K, FLAGS_warmup_iterations, FLAGS_profiling_iterations, FLAGS_sleep_duration, FLAGS_enable_check, FLAGS_n_mult, file.data());
     //tester.evaluate(cublasTensorOp, "Cublas-Tensor-Op");
 
-    tester.evaluateSparse(mmaNaiveKernel, "Mma-Naive-Kernel");
-    tester.evaluateSparse(mmaTKernel, "Mma-T-Kernel");
+    //tester.evaluateSparse(mmaNaiveKernel, "Mma-Naive-Kernel");
+    //tester.evaluateSparse(mmaTKernel, "Mma-T-Kernel");
 
-    tester.evaluateSparse2(mmaBKernel, "Mma-B-Kernel");
-    tester.evaluateSparse2(mmaBTKernel, "Mma-BT-Kernel");
+    //tester.evaluateSparse2(mmaBKernel, "Mma-B-Kernel");
+    //tester.evaluateSparse2(mmaBTKernel, "Mma-BT-Kernel");
     tester.evaluateSparse2(mmaCBTKernel, "Mma-CBT-Kernel");
 
     GFLAGS_NAMESPACE::ShutDownCommandLineFlags();

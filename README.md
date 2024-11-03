@@ -1,4 +1,4 @@
-# SMaT: (S)parse (Ma)trix Matrix (T)ensor Core-accelerated library ([PDF](link))
+# SMaT: (S)parse (Ma)trix Matrix (T)ensor Core-accelerated library ([PDF](https://arxiv.org/pdf/2408.11551))
 
 ## Abstract
 

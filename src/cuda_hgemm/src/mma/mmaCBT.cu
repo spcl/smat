@@ -41,20 +41,19 @@ __global__ void mmaCBTKernelSparse(half *bcsrValuesA, int *bcsrRowPtrA, int *bcs
         size_t blockIndex = blockRow * colRegions + i;
 
         size_t relativeIndex = relativeBlockIndexMapping[blockIndex];
+        
+        size_t A_size = MMA_M * MMA_K * sizeof(half);
+        size_t B_size = MMA_N * MMA_K * sizeof(half);
 
-         cooperative_groups::memcpy_async(group,
-            ((int4 *)(&A_smem[lane_id / 2][0]) + lane_id % 2),
-            (int4 *)(&bcsrValuesA[(relativeIndex) * MMA_M * MMA_K + (lane_id / 2) * MMA_K]) + lane_id % 2,
-            128);
-
-        if (lane_id < MMA_N * 2) {
-            cooperative_groups::memcpy_async(group,
-                ((int4 *)(&B_smem[lane_id / 2][0]) + lane_id % 2),
-                (int4 *)(&B[i * MMA_K + (warp_col + lane_id / 2) * K]) + lane_id % 2,
-                128);
-        }
+         cooperative_groups::memcpy_async(group, &A_smem[0][0],
+                         &bcsrValuesA[relativeIndex * MMA_M * MMA_K],
+                         A_size);
+         cooperative_groups::memcpy_async(group, &B_smem[0][0],
+                         &B[i * MMA_K + warp_col * K],
+                         B_size);
         
         cooperative_groups::wait(group); // Wait for all copies to complete
+        group.sync();
 
         uint32_t RA[4];
         uint32_t RB[2];
